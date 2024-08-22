@@ -1,18 +1,22 @@
 package com.picpaysimplificado.picpaysimplificado.services;
 
 import com.picpaysimplificado.picpaysimplificado.domain.user.User;
-import com.picpaysimplificado.picpaysimplificado.domain.user.userType;
-import com.picpaysimplificado.picpaysimplificado.repositories.userRepository;
+import com.picpaysimplificado.picpaysimplificado.domain.user.UserType;
+import com.picpaysimplificado.picpaysimplificado.dtos.UserDTO;
+import com.picpaysimplificado.picpaysimplificado.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.List;
 
-public class userService {
+@Service
+public class UserService {
     @Autowired
-    private userRepository userRepository;
+    private UserRepository userRepository;
 
     public void validateTransaction(User sender, BigDecimal amount) throws Exception {
-        if(sender.getUserType() == userType.MERCHANT){
+        if(sender.getUserType() == UserType.MERCHANT){
             throw new Exception("Usuario do tipo lojista nãp está autorizado a realizar transação");
         }
 
@@ -23,6 +27,16 @@ public class userService {
 
     public User findUserById(Long id) throws Exception {
         return this.userRepository.findUserById(id).orElseThrow(() -> new Exception("Usuario não encontrado"));
+    }
+
+    public User createNewUser(UserDTO data){
+        User newUser = new User(data);
+        this.saveUser(newUser);
+        return newUser;
+    }
+
+    public List<User> getAllUsers(){
+        return this.userRepository.findAll();
     }
 
     public void saveUser(User user){
